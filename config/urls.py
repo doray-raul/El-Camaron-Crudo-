@@ -16,7 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from crm.views import dashboard_view, clientes_view, detalle_cliente_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-]
+    path('', dashboard_view, name='dashboard'),
+    path('clientes/', clientes_view, name='clientes'),
+    path('clientes/<str:cliente_id>/', detalle_cliente_view, name='detalle_cliente'),
+    ]
