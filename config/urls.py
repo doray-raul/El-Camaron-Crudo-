@@ -24,3 +24,31 @@ urlpatterns = [
     path('clientes/', clientes_view, name='clientes'),
     path('clientes/<str:cliente_id>/', detalle_cliente_view, name='detalle_cliente'),
     ]
+
+from django.contrib import admin
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+from main import views as main_views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', main_views.index, name='index'),
+    path('accounts/', include('django.contrib.auth.urls')),  # login, logout, password reset
+    path('registro/', main_views.RegistroView.as_view(), name='registro'),
+    # Si tienes otras apps, las incluyes aquí
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+    from django.contrib import admin
+from django.urls import path, include
+from core import views as core_views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', core_views.home, name='home'),
+    path('crm/', include('crm.urls')),  # si ya tienes las URLs de crm
+    # Aquí puedes agregar las rutas de login/logout más adelante
+]
