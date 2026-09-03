@@ -1,4 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from .models import Cliente
+from .forms import ClienteForm
 
 def dashboard_view(request):
     context = {
@@ -10,14 +12,12 @@ def dashboard_view(request):
     return render(request, 'crm/dashboard.html', context)
 
 def clientes_view(request):
-    lista_clientes = [
-        {'id': '001', 'nombre': 'María López', 'empresa': 'Cliente Frecuente', 'correo': 'maria@email.com', 'telefono': '449-123-4567', 'etapa': 'Frecuente', 'estado': 'Activo'},
-        {'id': '002', 'nombre': 'Juan Pérez', 'empresa': 'Botanas Jerez', 'correo': 'juan.p@email.com', 'telefono': '449-987-6543', 'etapa': 'Activo', 'estado': 'Activo'},
-        {'id': '003', 'nombre': 'Ana García', 'empresa': 'Eventos Zacatecas', 'correo': 'ana.garcia@email.com', 'telefono': '449-555-0192', 'etapa': 'Prospecto', 'estado': 'Activo'},
-        {'id': '004', 'nombre': 'Carlos Ruiz', 'empresa': 'Particular', 'correo': 'carlos.ruiz@email.com', 'telefono': '449-333-8899', 'etapa': 'Inactivo', 'estado': 'Inactivo'},
-        {'id': '005', 'nombre': 'Luis Morales', 'empresa': 'Cervecería Local', 'correo': 'luis@email.com', 'telefono': '449-777-4411', 'etapa': 'Frecuente', 'estado': 'Activo'},
-    ]
-    context = {'clientes': lista_clientes}
+    clientes = Cliente.objects.all()
+
+    context = {
+        'clientes': clientes
+    }
+
     return render(request, 'crm/clientes.html', context)
 
 def detalle_cliente_view(request, cliente_id):
@@ -45,3 +45,33 @@ def detalle_cliente_view(request, cliente_id):
         'interacciones': interacciones
     }
     return render(request, 'crm/detalle_cliente.html', context)
+
+def nuevo_cliente_view(request):
+    if request.method == 'POST':
+        form = ClienteForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            return redirect('clientes')
+    else:
+        form = ClienteForm()
+
+    return render(request, 'crm/nuevo_cliente.html', {'form': form})
+
+def editar_cliente_view(request, cliente_id):
+    cliente = Cliente.objects.get(id=cliente_id)
+
+    if request.method == 'POST':
+        form = ClienteForm(request.POST, instance=cliente)
+
+        if form.is_valid():
+            form.save()
+            return redirect('clientes')
+    else:
+        form = ClienteForm(instance=cliente)
+
+    return render(
+        request,
+        'crm/editar_cliente.html',
+        {'form': form, 'cliente': cliente}
+    )
