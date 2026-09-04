@@ -1,6 +1,33 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
+
 from .models import Cliente
 from .forms import ClienteForm
+
+def login_view(request):
+    if request.method == 'POST':
+        correo = request.POST.get('correo')
+        password = request.POST.get('password')
+
+        usuario = authenticate(
+            request,
+            username=correo,
+            password=password
+        )
+
+        if usuario is not None:
+            login(request, usuario)
+            return redirect('dashboard')
+
+        messages.error(request, 'Correo o contraseña incorrectos.')
+
+    return render(request, 'crm/login.html')
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
 
 def dashboard_view(request):
     context = {
