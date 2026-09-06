@@ -7,7 +7,6 @@ class ClienteForm(forms.ModelForm):
         model = Cliente
         fields = [
             'nombre',
-            'empresa',
             'correo',
             'telefono',
             'etapa',
@@ -19,12 +18,6 @@ class ClienteForm(forms.ModelForm):
                 'class': 'w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-coral/20 focus:border-brand-coral',
                 'placeholder': 'Nombre completo',
             }),
-
-            'empresa': forms.TextInput(attrs={
-                'class': 'w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-coral/20 focus:border-brand-coral',
-                'placeholder': 'Empresa o negocio',
-            }),
-
             'correo': forms.EmailInput(attrs={
                 'class': 'w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-coral/20 focus:border-brand-coral',
                 'placeholder': 'correo@ejemplo.com',

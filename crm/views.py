@@ -52,7 +52,7 @@ def detalle_cliente_view(request, cliente_id):
     cliente = {
         'id': cliente_id,
         'nombre': 'María López',
-        'empresa': 'Cliente Frecuente - El Camarón Crudo',
+        #'empresa': 'Cliente Frecuente - El Camarón Crudo',
         'correo': 'maria@email.com',
         'telefono': '449-123-4567',
         'fecha_registro': '10/01/2026',
