@@ -1,5 +1,13 @@
 from django.urls import path
 from . import views
+from rest_framework.routers import DefaultRouter
+
+from .api_views import ClienteViewSet
+
+
+router = DefaultRouter()
+router.register(r'api/clientes', ClienteViewSet, basename='cliente')
+
 
 urlpatterns = [
     path('', views.dashboard_view, name='dashboard'),
@@ -11,3 +19,5 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
 ]
+
+urlpatterns += router.urls
