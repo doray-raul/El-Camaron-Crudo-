@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Cliente
+from .models import Cliente, Interaccion
 
 
 class ClienteSerializer(serializers.ModelSerializer):
@@ -16,3 +16,18 @@ class ClienteSerializer(serializers.ModelSerializer):
             'fecha_registro',
         ]
         read_only_fields = ['id', 'fecha_registro']
+        
+        
+class InteraccionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Interaccion
+        fields = [
+            'id',
+            'cliente',
+            'usuario',
+            'tipo',
+            'fecha',
+            'descripcion',
+        ]
+        read_only_fields = ['id']
+        

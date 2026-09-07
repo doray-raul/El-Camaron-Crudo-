@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 from rest_framework.routers import DefaultRouter
 
-from .api_views import ClienteViewSet
+from .api_views import ClienteViewSet, InteraccionCreateView
 
 
 router = DefaultRouter()
@@ -20,4 +20,7 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
 ]
 
+urlpatterns += [
+    path('api/interacciones/', InteraccionCreateView.as_view(), name='interaccion-create'),
+]
 urlpatterns += router.urls
