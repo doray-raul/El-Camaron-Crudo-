@@ -27,10 +27,13 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'productos' %}">Productos</a></li>
                     <li class="nav-item"><a class="nav-link active" href="{% url 'ubicacion' %}">Ubicación</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'carrito' %}"><i class="bi bi-cart3"></i> Carrito <span class="badge rounded-pill text-bg-light" data-cart-count>0</span></a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Cerrar sesión</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{% url 'admin_panel' %}">Admin</a></li>
+                    {% if user.is_authenticated %}
+                        {% if user.is_staff %}<li class="nav-item"><a class="nav-link" href="{% url 'admin_panel' %}">Admin</a></li>{% endif %}
+                        <li class="nav-item"><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="nav-link btn btn-link text-white" type="submit">Cerrar sesión</button></form></li>
+                    {% else %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Iniciar sesión</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'registro' %}">Registrarse</a></li>
+                    {% endif %}
                 </ul>
             </div>
         </div>

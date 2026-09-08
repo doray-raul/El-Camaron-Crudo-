@@ -1,0 +1,4 @@
+# Instálalo junto con los requisitos existentes para usar MySQL/MariaDB.
+PyMySQL==1.1.2
+# Necesario si el servidor usa el método de autenticación caching_sha2_password.
+cryptography>=42.0
