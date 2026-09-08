@@ -1,4 +1,6 @@
-from django.db.models import Q
+from datetime import timedelta
+from django.db.models import Count, Q
+from django.utils import timezone
 from rest_framework import generics, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -70,3 +72,46 @@ class ClienteViewSet(viewsets.ModelViewSet):
 class InteraccionCreateView(generics.CreateAPIView):
     queryset = Interaccion.objects.all()
     serializer_class = InteraccionSerializer
+    
+class MetricasCRMView(generics.GenericAPIView):
+
+    def get(self, request):
+        fecha_limite = timezone.now() - timedelta(days=30)
+
+        total_clientes = Cliente.objects.count()
+
+        clientes_activos = Cliente.objects.filter(
+            estado='ACTIVO'
+        ).count()
+
+        clientes_inactivos = Cliente.objects.filter(
+            estado='INACTIVO'
+        ).count()
+
+        interacciones_por_cliente = Cliente.objects.annotate(
+            total_interacciones=Count('interacciones')
+        ).values(
+            'id',
+            'nombre',
+            'total_interacciones'
+        )
+
+        clientes_sin_interaccion_reciente = Cliente.objects.exclude(
+            interacciones__fecha__gte=fecha_limite
+        ).values(
+            'id',
+            'nombre'
+        )
+
+        return Response({
+            'total_clientes': total_clientes,
+            'clientes_activos': clientes_activos,
+            'clientes_inactivos': clientes_inactivos,
+            'interacciones_por_cliente': list(
+                interacciones_por_cliente
+            ),
+            'clientes_sin_interaccion_reciente': list(
+                clientes_sin_interaccion_reciente
+            ),
+        })
+        

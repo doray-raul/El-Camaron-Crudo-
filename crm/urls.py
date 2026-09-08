@@ -2,7 +2,11 @@ from django.urls import path
 from . import views
 from rest_framework.routers import DefaultRouter
 
-from .api_views import ClienteViewSet, InteraccionCreateView
+from .api_views import (
+    ClienteViewSet,
+    InteraccionCreateView,
+    MetricasCRMView,
+)
 
 
 router = DefaultRouter()
@@ -15,12 +19,12 @@ urlpatterns = [
     path('clientes/nuevo/', views.nuevo_cliente_view, name='nuevo_cliente'),
     path('clientes/<int:cliente_id>/', views.detalle_cliente_view, name='detalle_cliente'),
     path('clientes/<int:cliente_id>/editar/', views.editar_cliente_view, name='editar_cliente'),
-
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
 ]
 
 urlpatterns += [
     path('api/interacciones/', InteraccionCreateView.as_view(), name='interaccion-create'),
+    path('api/metricas/', MetricasCRMView.as_view()),
 ]
 urlpatterns += router.urls
