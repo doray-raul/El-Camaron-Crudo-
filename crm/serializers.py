@@ -29,5 +29,5 @@ class InteraccionSerializer(serializers.ModelSerializer):
             'fecha',
             'descripcion',
         ]
-        read_only_fields = ['id']
+        read_only_fields = ['id', 'usuario', 'fecha']
         

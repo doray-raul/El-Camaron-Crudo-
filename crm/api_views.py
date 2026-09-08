@@ -4,14 +4,15 @@ from django.utils import timezone
 from rest_framework import generics, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-
+from .permissions import EsAdminOEmpleadoSinEliminar
 from .models import Cliente, Interaccion
 from .serializers import ClienteSerializer, InteraccionSerializer
 
 
 class ClienteViewSet(viewsets.ModelViewSet):
     serializer_class = ClienteSerializer
-
+    permission_classes = [EsAdminOEmpleadoSinEliminar]
+    
     def get_queryset(self):
         queryset = Cliente.objects.all()
 
@@ -72,6 +73,9 @@ class ClienteViewSet(viewsets.ModelViewSet):
 class InteraccionCreateView(generics.CreateAPIView):
     queryset = Interaccion.objects.all()
     serializer_class = InteraccionSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(usuario=self.request.user)
     
 class MetricasCRMView(generics.GenericAPIView):
 
@@ -115,3 +119,11 @@ class MetricasCRMView(generics.GenericAPIView):
             ),
         })
         
+        
+class MisInteraccionesView(generics.ListAPIView):
+    serializer_class = InteraccionSerializer
+
+    def get_queryset(self):
+        return Interaccion.objects.filter(
+            usuario=self.request.user
+        ).order_by('-fecha')

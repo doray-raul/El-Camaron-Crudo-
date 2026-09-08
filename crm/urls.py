@@ -6,6 +6,7 @@ from .api_views import (
     ClienteViewSet,
     InteraccionCreateView,
     MetricasCRMView,
+    MisInteraccionesView,
 )
 
 
@@ -26,5 +27,10 @@ urlpatterns = [
 urlpatterns += [
     path('api/interacciones/', InteraccionCreateView.as_view(), name='interaccion-create'),
     path('api/metricas/', MetricasCRMView.as_view()),
+    path(
+    'api/interacciones/mis-interacciones/',
+    MisInteraccionesView.as_view(),
+    name='mis-interacciones'
+),
 ]
 urlpatterns += router.urls
