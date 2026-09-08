@@ -18,7 +18,7 @@ class Cliente(models.Model):
     nombre = models.CharField(max_length=100)
     correo = models.EmailField(blank=True)
     telefono = models.CharField(max_length=20, blank=True)
-    etapa = models.CharField(
+    etapa_crm = models.CharField(
         max_length=20,
         choices=ETAPAS,
         default='PROSPECTO'

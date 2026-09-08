@@ -11,7 +11,7 @@ class ClienteSerializer(serializers.ModelSerializer):
             'nombre',
             'correo',
             'telefono',
-            'etapa',
+            'etapa_crm',
             'estado',
             'fecha_registro',
         ]

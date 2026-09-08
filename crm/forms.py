@@ -9,7 +9,7 @@ class ClienteForm(forms.ModelForm):
             'nombre',
             'correo',
             'telefono',
-            'etapa',
+            'etapa_crm',
             'estado',
         ]
 
@@ -28,7 +28,7 @@ class ClienteForm(forms.ModelForm):
                 'placeholder': '449-123-4567',
             }),
 
-            'etapa': forms.Select(attrs={
+            'etapa_crm': forms.Select(attrs={
                 'class': 'w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-coral/20 focus:border-brand-coral',
             }),
 
