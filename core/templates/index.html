@@ -1,0 +1,176 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Camarón Crudo</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- CSS personalizado -->
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <!-- ========== NAVBAR ========== -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-danger">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img src="{% static 'img/Logo.jpeg' %}" alt="El Camarón Crudo" height="100" width="100">
+                El Camarón Crudo
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'productos' %}">Productos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'ubicacion' %}">Ubicación</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin_panel' %}">Admin</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'carrito' %}" aria-label="Ver carrito">
+                            <i class="bi bi-cart3"></i> Carrito <span class="badge rounded-pill text-bg-light" data-cart-count>0</span>
+                        </a>
+                    </li>
+                        <li class="nav-item">
+                            <!-- CORREGIDO: href con url de login -->
+                            <a class="nav-link" href="{% url 'login' %}">Iniciar sesión</a>
+                        </li>
+                        <li class="nav-item">
+                            <!-- CORREGIDO: href con url de registro -->
+                            <a class="nav-link" href="{% url 'registro' %}">Registrarse</a>
+                        </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========== CARRUSEL ========== -->
+    <div id="carouselPrincipal" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselPrincipal" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#carouselPrincipal" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#carouselPrincipal" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
+        <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="{% static 'img/camaron.jpg' %}" class="d-block w-100" alt="Camarones frescos" style="height: 500px; object-fit: cover;">
+                    <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-3">
+                        <h5>El Camarón Crudo</h5>
+                        <p>Los mejores mariscos frescos para disfrutar.</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="{% static 'img/Producto1.jpeg' %}" alt="Camarones al ajillo" height="500" width="500">
+                    <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-3">
+                        <h5>Camarones al Ajillo</h5>
+                        <p>Salteados con ajo y mantequilla.</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="{% static 'img/Producto2.jpeg' %}" alt="Productos frescos" height="500" width="500">
+                    <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-3">
+                        <h5>Productos Frescos</h5>
+                        <p>Calidad y sabor en cada platillo.</p>
+                    </div>
+                </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselPrincipal" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Anterior</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselPrincipal" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Siguiente</span>
+        </button>
+    </div>
+
+    <!-- ========== MAIN (PRODUCTOS DESTACADOS) ========== -->
+    <section id="productos" class="container my-5">
+        <h2 class="text-center mb-4">Nuestros Productos</h2>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div id="producto-ceviche" class="card h-100 shadow-sm">
+                    <!-- CORREGIDO: uso de static para imágenes -->
+                    <img src="{% static 'img/Logo.jpeg' %}" alt="" height="300px" width="350px" >
+                    <div class="card-body">
+                        <h5 class="card-title">Ceviche de Camarón</h5>
+                        <p class="card-text">Fresco y picante, con nuestro toque especial.</p>
+                        <button type="button" class="btn btn-danger" data-agregar-carrito data-id="ceviche" data-nombre="Ceviche de Camarón" data-precio="120.00" data-imagen="img/Logo.jpeg">Agregar al carrito</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div id="producto-ajillo" class="card h-100 shadow-sm">
+                    <img src="{% static 'img/Producto1.jpeg' %}" alt="" height="300px" width="350px">
+                    <div class="card-body">
+                        <h5 class="card-title">Camarones al Ajillo</h5>
+                        <p class="card-text">Salteados con ajo y mantequilla, una delicia.</p>
+                        <button type="button" class="btn btn-danger" data-agregar-carrito data-id="ajillo" data-nombre="Camarones al Ajillo" data-precio="150.00" data-imagen="img/Producto1.jpeg">Agregar al carrito</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="ubicacion" class="container my-5 text-center">
+        <h2 class="mb-4">Ubicación</h2>
+        <p>Visítanos y disfruta nuestros productos frescos.</p>
+        <p>Av. Paseo de la cruz #123, Aguascalientes, México</p>
+        <a class="btn btn-danger" href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer">
+            Ver en Google Maps
+        </a>
+    </section>
+
+    <!-- ========== BANNER DE COOKIES ========== -->
+    <div id="cookieBanner" class="alert alert-warning text-center fixed-bottom mb-0" style="display: none; z-index: 9999;">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    Usamos cookies para mejorar tu experiencia. Al continuar navegando, aceptas nuestra 
+                    <a href="#politicas" class="alert-link">política de cookies</a>.
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <button type="button" class="btn btn-primary btn-sm" onclick="aceptarCookies()">Aceptar</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="rechazarCookies()">Rechazar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== FOOTER CON POLÍTICAS ========== -->
+    <footer class="bg-dark text-white py-4 mt-5" id="politicas">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>El Camarón Crudo</h5>
+                    <p>© 2026 - Todos los derechos reservados</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <h5>Políticas de Privacidad</h5>
+                    <p>
+                        Tus datos personales son tratados con confidencialidad. 
+                        No compartimos tu información con terceros sin tu consentimiento. 
+                        <a href="{% url 'politicas_privacidad' %}" class="text-warning">Leer más</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS y dependencias -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Script para cookies -->
+    <script src="{% static 'js/cookies.js' %}"></script>
+    <script src="{% static 'js/cart.js' %}"></script>
+</body>
+</html>

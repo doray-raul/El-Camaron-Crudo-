@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago | El Camarón Crudo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-dark bg-danger"><div class="container"><a class="navbar-brand" href="{% url 'home' %}">El Camarón Crudo</a><a class="nav-link text-white" href="{% url 'carrito' %}"><i class="bi bi-cart3"></i> Volver al carrito</a></div></nav>
+    <main class="container py-5" style="max-width: 760px;">
+        <div class="alert alert-info"><i class="bi bi-info-circle"></i> Pasarela de demostración: no se realiza ningún cobro ni se guardan datos bancarios.</div>
+        <div class="card shadow-sm border-0"><div class="card-body p-4 p-md-5">
+            <h1 class="h3 mb-4">Información de pago</h1>
+            <form id="payment-form">
+                <div class="row g-3">
+                    <div class="col-12"><label for="nombre" class="form-label">Nombre del titular</label><input id="nombre" class="form-control" required></div>
+                    <div class="col-12"><label for="email" class="form-label">Correo electrónico</label><input id="email" type="email" class="form-control" required></div>
+                    <div class="col-12"><label for="numero" class="form-label">Número de tarjeta de prueba</label><input id="numero" inputmode="numeric" maxlength="19" placeholder="4242 4242 4242 4242" class="form-control" required></div>
+                    <div class="col-md-6"><label for="vencimiento" class="form-label">Vencimiento</label><input id="vencimiento" placeholder="MM/AA" class="form-control" required></div>
+                    <div class="col-md-6"><label for="cvv" class="form-label">CVV</label><input id="cvv" inputmode="numeric" maxlength="4" class="form-control" required></div>
+                </div>
+                <button class="btn btn-danger w-100 mt-4" type="submit"><i class="bi bi-lock-fill"></i> Confirmar pedido de prueba</button>
+            </form>
+            <div id="payment-result" class="alert alert-success mt-4 d-none" role="status"></div>
+        </div></div>
+    </main>
+    <script src="{% static 'js/cart.js' %}"></script>
+</body>
+</html>

@@ -1,29 +1,61 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+
 
 def home(request):
-    # Las imágenes del carrusel pueden ser estáticas o dinámicas
-    # Aquí pasamos una lista de diccionarios con info de las imágenes
-    carousel_items = [
-        {'title': 'Tostadas y Tostitos', 'desc': 'Crujientes y llenos de sabor', 'image': 'core/images/carousel1.jpg'},
-        {'title': 'Estilo Jerez', 'desc': 'El auténtico sabor de la región', 'image': 'core/images/carousel2.jpg'},
-        {'title': '¡Enchila pero no envenena!', 'desc': 'Nuestro toque especial', 'image': 'core/images/carousel3.jpg'},
-    ]
-    context = {
-        'carousel_items': carousel_items,
-    }
-    return render(request, 'core/home.html', context)
+    return render(request, 'index.html')
 
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login
-from django.shortcuts import redirect
+
+def productos_view(request):
+    productos = [
+        {
+            'nombre': 'Ceviche de Camarón',
+            'descripcion': 'Fresco y picante, con nuestro toque especial.',
+            'precio': '120.00',
+            'imagen': 'img/Logo.jpeg',
+        },
+        {
+            'nombre': 'Camarones al Ajillo',
+            'descripcion': 'Salteados con ajo y mantequilla, una delicia.',
+            'precio': '150.00',
+            'imagen': 'img/Producto1.jpeg',
+        },
+        {
+            'nombre': 'Producto Fresco',
+            'descripcion': 'Selección de mariscos frescos del día.',
+            'precio': '180.00',
+            'imagen': 'img/Producto2.jpeg',
+        },
+    ]
+    return render(request, 'productos.html', {'productos': productos})
+
+
+def ubicacion_view(request):
+    return render(request, 'ubicacion.html')
+
+
+def admin_panel_view(request):
+    return render(request, 'admin_panel.html')
+
+
+def login_view(request):
+    # Por ahora esta pantalla es únicamente visual. No hay usuarios ni BD.
+    return render(request, 'login.html')
+
+
+def logout_view(request):
+    return redirect('home')
 
 def registro(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('home')
-    else:
-        form = UserCreationForm()
-    return render(request, 'registration/registro.html', {'form': form})
+    # Por ahora esta pantalla es únicamente visual. No hay usuarios ni BD.
+    return render(request, 'registro.html')
+
+def politicas_privacidad(request):
+    return render(request, 'politicas.html')
+
+
+def carrito_view(request):
+    return render(request, 'carrito.html')
+
+
+def pago_view(request):
+    return render(request, 'pago.html')

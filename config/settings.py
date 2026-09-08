@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    'crm',
 ]
 
 MIDDLEWARE = [
@@ -116,7 +115,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
-STATIC_URL = 'static/'
+# La barra inicial hace que los recursos se busquen siempre desde la raíz del
+# sitio, también cuando se navega a /productos/, /login/, etc.
+STATIC_URL = '/static/'
 
 
 # Email
@@ -135,6 +136,5 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'crm',        # tu app existente
     'core',       # nueva app
 ]
