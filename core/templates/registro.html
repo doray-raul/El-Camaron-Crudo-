@@ -1,0 +1,115 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro | El Camarón Crudo</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- CSS personalizado -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+    <!-- ========== NAVBAR (idéntico al de index) ========== -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-danger">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img src="{% static 'img/Logo.jpeg' %}" alt="El Camarón Crudo" height="50" class="d-inline-block align-text-top">
+                El Camarón Crudo
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}#productos">Productos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}#ubicacion">Ubicación</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'carrito' %}"><i class="bi bi-cart3"></i> Carrito <span class="badge rounded-pill text-bg-light" data-cart-count>0</span></a></li>
+                    {% if user.is_authenticated %}
+                        {% if user.is_staff %}<li class="nav-item"><a class="nav-link" href="{% url 'admin_panel' %}">Admin</a></li>{% endif %}
+                        <li class="nav-item"><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="nav-link btn btn-link text-white" type="submit">Cerrar sesión</button></form></li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Iniciar sesión</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="{% url 'registro' %}">Registrarse</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ========== CONTENIDO PRINCIPAL: FORMULARIO DE REGISTRO ========== -->
+    <div class="container my-5" style="max-width: 500px;">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h2 class="text-center mb-4" style="font-family: var(--font-title); color: var(--primary);">Crear cuenta</h2>
+                
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Usuario</label>
+                        <input id="id_username" name="username" type="text" class="form-control" value="{{ form.username.value|default:'' }}" required>
+                        {% if form.username.errors %}<div class="text-danger small">{{ form.username.errors }}</div>{% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_password1" class="form-label">Contraseña</label>
+                        <input id="id_password1" name="password1" type="password" class="form-control" required>
+                        {% if form.password1.errors %}<div class="text-danger small">{{ form.password1.errors }}</div>{% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_password2" class="form-label">Confirmar contraseña</label>
+                        <input id="id_password2" name="password2" type="password" class="form-control" required>
+                        {% if form.password2.errors %}<div class="text-danger small">{{ form.password2.errors }}</div>{% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-danger w-100 py-2 mt-3" style="font-weight: 700;">
+                        Registrarse
+                    </button>
+                </form>
+                <p class="text-center mt-3">
+                    ¿Ya tienes cuenta? <a href="{% url 'login' %}" class="text-danger fw-bold">Inicia sesión</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== FOOTER (idéntico al de index) ========== -->
+    <footer class="bg-dark text-white py-4 mt-5" id="politicas">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>El Camarón Crudo</h5>
+                    <p>© 2026 - Todos los derechos reservados</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <h5>Políticas de Privacidad</h5>
+                    <p>
+                        Tus datos personales son tratados con confidencialidad. 
+                        No compartimos tu información con terceros sin tu consentimiento. 
+                        <a href="{% url 'politicas_privacidad' %}" class="text-warning">Leer más</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/cart.js' %}"></script>
+</body>
+</html>
