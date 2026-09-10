@@ -39,12 +39,21 @@
             <a href="{% url 'clientes' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800/60 text-slate-300 transition">
                 - Clientes
             </a>
-            <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800/60 text-slate-300 transition">
-                - Mi Actividad
-            </a>
-            <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800/60 text-slate-300 transition">
-                - Reportes y Métricas
-            </a>
+            <a href="{% url 'mi_actividad' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800/60 text-slate-300 transition">
+    - Mi Actividad
+</a>
+            <a href="{% url 'reportes_metricas' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800/60 text-slate-300 transition">
+    - Reportes y Métricas
+</a>
+{% if user.is_staff %}
+<a href="{% url 'usuarios' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800/60 text-slate-300 transition">
+    - Usuarios / Empleados
+</a>
+{% endif %}
+
+<a href="{% url 'perfil' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800/60 text-slate-300 transition">
+    - Mi Perfil
+</a>
         </nav>
 
         <div class="p-4 border-t border-slate-800 text-xs text-slate-500">
@@ -66,9 +75,16 @@
             </div>
             <div class="flex items-center gap-3">
                 <div class="text-right">
-                    <span class="block text-xs font-bold text-slate-700">Administrador</span>
-                    <span class="block text-[10px] text-slate-400">Sucursal Jerez</span>
-                </div>
+                    <span class="block text-xs font-bold text-slate-700">
+    {{ user.get_full_name|default:user.username }}
+</span>
+                    <span class="block text-[10px] text-slate-400">
+    {% if user.is_staff %}
+        Administrador
+    {% else %}
+        Usuario
+    {% endif %}
+</span>
                 <div class="w-9 h-9 rounded-full bg-brand-coral text-white flex items-center justify-center font-bold text-sm shadow-sm">
                     CC
                 </div>
