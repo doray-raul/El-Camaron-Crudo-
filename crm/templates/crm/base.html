@@ -3,101 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>{% block title %}El Camarón Crudo | CRM{% endblock %}</title>
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
                         brand: {
-                            dark: '#111827', // Carbón / Fondo del sidebar
-                            coral: '#E11D48', // Acento principal (Camarón)
-                            lime: '#10B981',  // Acento secundario (Fresco/Activo)
-                            yellow: '#FACC15' // Alerta / Cítrico
+                            dark: '#111827',
+                            coral: '#E11D48',
+                            lime: '#10B981',
+                            yellow: '#FACC15'
                         }
                     }
                 }
             }
         }
     </script>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body class="bg-slate-50 font-sans text-slate-800 antialiased h-screen flex overflow-hidden">
 
     <!-- SIDEBAR -->
     <aside class="w-64 bg-brand-dark text-slate-300 flex flex-col border-r border-slate-800">
+
+        <!-- LOGO -->
         <div class="p-6 border-b border-slate-800/80">
-            <span class="text-[10px] uppercase tracking-widest text-brand-coral font-bold block mb-1">CRM Empresarial</span>
-            <h1 class="text-base font-extrabold text-white tracking-wide">El Camarón Crudo</h1>
+            <span class="text-[10px] uppercase tracking-widest text-brand-coral font-bold block mb-1">
+                CRM Empresarial
+            </span>
+
+            <h1 class="text-base font-extrabold text-white tracking-wide">
+                El Camarón Crudo
+            </h1>
         </div>
-        
+
+        <!-- MENÚ -->
         <nav class="flex-1 p-4 space-y-1 text-sm font-medium">
-            <a href="{% url 'dashboard' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800/60 text-slate-300 transition">
+
+            <a href="{% url 'dashboard' %}"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800/60 text-slate-300 transition">
                 - Dashboard
             </a>
-            <a href="{% url 'clientes' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800/60 text-slate-300 transition">
+
+            <a href="{% url 'clientes' %}"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800/60 text-slate-300 transition">
                 - Clientes
             </a>
-            <a href="{% url 'mi_actividad' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800/60 text-slate-300 transition">
-    - Mi Actividad
-</a>
-            <a href="{% url 'reportes_metricas' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800/60 text-slate-300 transition">
-    - Reportes y Métricas
-</a>
-{% if user.is_staff %}
-<a href="{% url 'usuarios' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800/60 text-slate-300 transition">
-    - Usuarios / Empleados
-</a>
-{% endif %}
 
-<a href="{% url 'perfil' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800/60 text-slate-300 transition">
-    - Mi Perfil
-</a>
+            <a href="{% url 'mi_actividad' %}"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800/60 text-slate-300 transition">
+                - Mi Actividad
+            </a>
+
+            <a href="{% url 'reportes_metricas' %}"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800/60 text-slate-300 transition">
+                - Reportes y Métricas
+            </a>
+
+            {% if user.is_staff %}
+            <a href="{% url 'usuarios' %}"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800/60 text-slate-300 transition">
+                - Usuarios / Empleados
+            </a>
+            {% endif %}
+
+            <a href="{% url 'perfil' %}"
+               class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800/60 text-slate-300 transition">
+                - Mi Perfil
+            </a>
+
         </nav>
 
-        <div class="p-4 border-t border-slate-800 text-xs text-slate-500">
+        <!-- CERRAR SESIÓN -->
+        <div class="p-4 border-t border-slate-800">
+
+            <form method="post" action="{% url 'core_logout' %}">
+                {% csrf_token %}
+
+                <button type="submit"
+                        class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-red-500/10 hover:text-red-400 transition">
+
+                    <span>↪</span>
+                    Cerrar sesión
+
+                </button>
+            </form>
+
+        </div>
+
+        <!-- UBICACIÓN -->
+        <div class="px-4 pb-4 text-xs text-slate-500">
             Jerez, Zacatecas 🇲🇽
         </div>
+
     </aside>
+
 
     <!-- CONTENEDOR PRINCIPAL -->
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-        
+
         <!-- NAVBAR -->
         <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 z-10">
+
+            <!-- BUSCADOR -->
             <div class="w-80">
-                <input 
-                    type="text" 
-                    placeholder="Buscar cliente, teléfono..." 
+                <input
+                    type="text"
+                    placeholder="Buscar cliente, teléfono..."
                     class="w-full px-4 py-2 bg-slate-100 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-coral/20 focus:border-brand-coral transition"
                 >
             </div>
+
+            <!-- USUARIO -->
             <div class="flex items-center gap-3">
+
                 <div class="text-right">
+
                     <span class="block text-xs font-bold text-slate-700">
-    {{ user.get_full_name|default:user.username }}
-</span>
+                        {{ user.get_full_name|default:user.username }}
+                    </span>
+
                     <span class="block text-[10px] text-slate-400">
-    {% if user.is_staff %}
-        Administrador
-    {% else %}
-        Usuario
-    {% endif %}
-</span>
+                        {% if user.is_staff %}
+                            Administrador
+                        {% else %}
+                            Usuario
+                        {% endif %}
+                    </span>
+
+                </div>
+
                 <div class="w-9 h-9 rounded-full bg-brand-coral text-white flex items-center justify-center font-bold text-sm shadow-sm">
                     CC
                 </div>
+
             </div>
+
         </header>
+
 
         <!-- CONTENIDO DINÁMICO -->
         <main class="flex-1 overflow-y-auto p-8 bg-slate-50/50">
+
             {% block content %}
             <!-- Aquí se inyectará el contenido de cada pantalla -->
             {% endblock %}
+
         </main>
+
     </div>
 
 </body>

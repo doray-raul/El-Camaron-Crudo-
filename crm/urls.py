@@ -31,8 +31,6 @@ path(
     views.reportes_metricas_view,
     name='reportes_metricas'
 ),
-    path('login/', views.login_view, name='login'),
-    path('logout/', views.logout_view, name='logout'),
     
     path(
     'usuarios/',
