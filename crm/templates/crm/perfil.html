@@ -1,0 +1,74 @@
+{% extends 'crm/base.html' %}
+
+{% block title %}Mi Perfil | El Camarón Crudo{% endblock %}
+
+{% block content %}
+
+<div class="max-w-2xl mx-auto">
+
+    <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+
+        <div class="flex items-center justify-between mb-6">
+
+            <div>
+                <h2 class="text-2xl font-bold text-slate-800">
+                    Mi Perfil
+                </h2>
+
+                <p class="text-sm text-slate-500">
+                    Información de tu cuenta.
+                </p>
+            </div>
+
+            <a href="{% url 'editar_perfil' %}"
+               class="px-4 py-2 bg-brand-coral text-white rounded-lg text-sm">
+                Editar perfil
+            </a>
+
+        </div>
+
+        <div class="space-y-4">
+
+            <div>
+                <p class="text-sm text-slate-500">Usuario</p>
+                <p class="font-medium text-slate-800">
+                    {{ usuario.username }}
+                </p>
+            </div>
+
+            <div>
+                <p class="text-sm text-slate-500">Nombre</p>
+                <p class="font-medium text-slate-800">
+                    {{ usuario.get_full_name|default:"Sin nombre" }}
+                </p>
+            </div>
+
+            <div>
+                <p class="text-sm text-slate-500">Correo</p>
+                <p class="font-medium text-slate-800">
+                    {{ usuario.email }}
+                </p>
+            </div>
+
+            <div>
+                <p class="text-sm text-slate-500">Estado</p>
+
+                {% if usuario.is_active %}
+                    <span class="text-emerald-600 font-medium">
+                        Activo
+                    </span>
+                {% else %}
+                    <span class="text-red-600 font-medium">
+                        Inactivo
+                    </span>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

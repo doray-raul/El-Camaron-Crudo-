@@ -7,6 +7,7 @@
     <title>El Camarón Crudo</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- CSS personalizado -->
 <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
@@ -33,16 +34,17 @@
                         <a class="nav-link" href="{% url 'ubicacion' %}">Ubicación</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'admin_panel' %}">Admin</a>
+                        <a class="nav-link" href="{% url 'carrito' %}" aria-label="Ver carrito">
+                            <i class="bi bi-cart3"></i> Carrito <span class="badge rounded-pill text-bg-light" data-cart-count>0</span>
+                        </a>
                     </li>
-                        <li class="nav-item">
-                            <!-- CORREGIDO: href con url de login -->
-                            <a class="nav-link" href="{% url 'login' %}">Iniciar sesión</a>
-                        </li>
-                        <li class="nav-item">
-                            <!-- CORREGIDO: href con url de registro -->
-                            <a class="nav-link" href="{% url 'registro' %}">Registrarse</a>
-                        </li>
+                    {% if user.is_authenticated %}
+                        {% if user.is_staff %}<li class="nav-item"><a class="nav-link" href="{% url 'admin_panel' %}">Admin</a></li>{% endif %}
+                        <li class="nav-item"><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="nav-link btn btn-link text-white" type="submit">Cerrar sesión</button></form></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Iniciar sesión</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'registro' %}">Registrarse</a></li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
@@ -64,12 +66,12 @@
                     </div>
                 </div>
                 <div class="carousel-item">
-                    <img src="{% static 'img/Producto1.jpeg' %}" alt="Tostios con carne" height="500" width="500">
+                    <img src="{% static 'img/Producto1.jpeg' %}" alt="Camarones al ajillo" height="500" width="500">
                     <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-3">
-                        <h5>Tosticarne</h5>
-                        <p>Tostiso con carne, verdura y salsa estilo jerez.</p>
+                        <h5>Camarones al Ajillo</h5>
+                        <p>Salteados con ajo y mantequilla.</p>
                     </div>
-                </div>  
+                </div>
                 <div class="carousel-item">
                     <img src="{% static 'img/Producto2.jpeg' %}" alt="Productos frescos" height="500" width="500">
                     <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-3">
@@ -99,7 +101,7 @@
                     <div class="card-body">
                         <h5 class="card-title">Ceviche de Camarón</h5>
                         <p class="card-text">Fresco y picante, con nuestro toque especial.</p>
-                        <a href="#producto-ceviche" class="btn btn-danger">Ver más</a>
+                        <button type="button" class="btn btn-danger" data-agregar-carrito data-id="ceviche" data-nombre="Ceviche de Camarón" data-precio="120.00" data-imagen="img/Logo.jpeg">Agregar al carrito</button>
                     </div>
                 </div>
             </div>
@@ -107,9 +109,9 @@
                 <div id="producto-ajillo" class="card h-100 shadow-sm">
                     <img src="{% static 'img/Producto1.jpeg' %}" alt="" height="300px" width="350px">
                     <div class="card-body">
-                        <h5 class="card-title">Tostios con carne</h5>
-                        <p class="card-text">Tostitos preparados con carne, verdura y salsa estilo jerez.</p>
-                        <a href="#producto-ajillo" class="btn btn-danger">Ver más</a>
+                        <h5 class="card-title">Camarones al Ajillo</h5>
+                        <p class="card-text">Salteados con ajo y mantequilla, una delicia.</p>
+                        <button type="button" class="btn btn-danger" data-agregar-carrito data-id="ajillo" data-nombre="Camarones al Ajillo" data-precio="150.00" data-imagen="img/Producto1.jpeg">Agregar al carrito</button>
                     </div>
                 </div>
             </div>
@@ -131,7 +133,7 @@
             <div class="row align-items-center">
                 <div class="col-md-8">
                     Usamos cookies para mejorar tu experiencia. Al continuar navegando, aceptas nuestra 
-                    <a href="politicas" class="alert-link">política de cookies</a>.
+                    <a href="#politicas" class="alert-link">política de cookies</a>.
                 </div>
                 <div class="col-md-4 text-md-end">
                     <button type="button" class="btn btn-primary btn-sm" onclick="aceptarCookies()">Aceptar</button>
@@ -154,7 +156,7 @@
                     <p>
                         Tus datos personales son tratados con confidencialidad. 
                         No compartimos tu información con terceros sin tu consentimiento. 
-                        <a href="politicas" class="text-warning">Leer más</a>
+                        <a href="{% url 'politicas_privacidad' %}" class="text-warning">Leer más</a>
                     </p>
                 </div>
             </div>
@@ -165,5 +167,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Script para cookies -->
     <script src="{% static 'js/cookies.js' %}"></script>
+    <script src="{% static 'js/cart.js' %}"></script>
 </body>
 </html>

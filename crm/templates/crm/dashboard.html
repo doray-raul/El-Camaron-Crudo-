@@ -1,0 +1,97 @@
+{% extends 'crm/base.html' %}
+
+{% block title %}Dashboard | El Camarón Crudo{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Título de sección -->
+    <div>
+        <h2 class="text-2xl font-bold text-slate-800">Dashboard General</h2>
+        <p class="text-sm text-slate-500">Resumen de la relación con clientes y estado actual del CRM.</p>
+    </div>
+
+    <!-- TARJETAS KPI -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total de Clientes</span>
+            <div class="text-3xl font-extrabold text-slate-800 mt-2">{{ total_clientes }}</div>
+            <span class="text-xs text-brand-lime font-medium mt-1 inline-block">+12% este mes</span>
+        </div>
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Clientes Activos</span>
+            <div class="text-3xl font-extrabold text-slate-800 mt-2">{{ clientes_activos }}</div>
+            <span class="text-xs text-slate-500 font-medium mt-1 inline-block">75% del total</span>
+        </div>
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Interacciones</span>
+            <div class="text-3xl font-extrabold text-slate-800 mt-2">{{ interacciones }}</div>
+            <span class="text-xs text-brand-lime font-medium mt-1 inline-block">Periodo actual</span>
+        </div>
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-brand-coral">
+            <span class="text-xs font-semibold text-brand-coral uppercase tracking-wider">Clientes en Riesgo</span>
+            <div class="text-3xl font-extrabold text-brand-coral mt-2">{{ clientes_en_riesgo }}</div>
+            <span class="text-xs text-slate-400 font-medium mt-1 inline-block">Sin interacción +30 días</span>
+        </div>
+    </div>
+</div>
+<div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 mt-6">
+
+    <div class="mb-4">
+        <h3 class="text-lg font-bold text-slate-800">
+            Clientes por etapa CRM
+        </h3>
+        <p class="text-sm text-slate-500">
+            Distribución actual de clientes registrados.
+        </p>
+    </div>
+
+    <div class="h-80">
+        <canvas id="clientesEtapaChart"></canvas>
+    </div>
+
+</div>
+
+<script>
+    const clientesPorEtapa = {{ clientes_por_etapa|safe }};
+
+    const etiquetas = clientesPorEtapa.map(item => {
+        const nombres = {
+            'PROSPECTO': 'Prospecto',
+            'ACTIVO': 'Activo',
+            'FRECUENTE': 'Frecuente',
+            'INACTIVO': 'Inactivo'
+        };
+
+        return nombres[item.etapa_crm] || item.etapa_crm;
+    });
+
+    const cantidades = clientesPorEtapa.map(item => item.total);
+
+    new Chart(
+        document.getElementById('clientesEtapaChart'),
+        {
+            type: 'bar',
+            data: {
+                labels: etiquetas,
+                datasets: [{
+                    label: 'Clientes',
+                    data: cantidades,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        }
+    );
+</script>
+{% endblock %}
