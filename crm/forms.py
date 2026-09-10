@@ -101,21 +101,23 @@ class UsuarioForm(forms.ModelForm):
         return cleaned_data
 
     def save(self, commit=True):
-        usuario = super().save(commit=False)
+            usuario = super().save(commit=False)
 
-        usuario.username = usuario.email
+            usuario.username = usuario.email
 
-        password = self.cleaned_data.get('password')
+            password = self.cleaned_data.get('password')
+            if password:
+                usuario.set_password(password)
 
-        if password:
-            usuario.set_password(password)
+            # Solo modificar el rol si el campo existe en el formulario.
+            # En "Mi Perfil" ese campo se elimina para no alterar permisos.
+            if 'es_administrador' in self.fields:
+                usuario.is_staff = self.cleaned_data.get(
+                    'es_administrador',
+                    usuario.is_staff
+                )
 
-        usuario.is_staff = self.cleaned_data.get(
-            'es_administrador',
-            False
-        )
+            if commit:
+                usuario.save()
 
-        if commit:
-            usuario.save()
-
-        return usuario
+            return usuario

@@ -34,4 +34,64 @@
         </div>
     </div>
 </div>
+<div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 mt-6">
+
+    <div class="mb-4">
+        <h3 class="text-lg font-bold text-slate-800">
+            Clientes por etapa CRM
+        </h3>
+        <p class="text-sm text-slate-500">
+            Distribución actual de clientes registrados.
+        </p>
+    </div>
+
+    <div class="h-80">
+        <canvas id="clientesEtapaChart"></canvas>
+    </div>
+
+</div>
+
+<script>
+    const clientesPorEtapa = {{ clientes_por_etapa|safe }};
+
+    const etiquetas = clientesPorEtapa.map(item => {
+        const nombres = {
+            'PROSPECTO': 'Prospecto',
+            'ACTIVO': 'Activo',
+            'FRECUENTE': 'Frecuente',
+            'INACTIVO': 'Inactivo'
+        };
+
+        return nombres[item.etapa_crm] || item.etapa_crm;
+    });
+
+    const cantidades = clientesPorEtapa.map(item => item.total);
+
+    new Chart(
+        document.getElementById('clientesEtapaChart'),
+        {
+            type: 'bar',
+            data: {
+                labels: etiquetas,
+                datasets: [{
+                    label: 'Clientes',
+                    data: cantidades,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        }
+    );
+</script>
 {% endblock %}

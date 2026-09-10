@@ -17,15 +17,26 @@
             <div class="flex items-center gap-3">
                 <h2 class="text-2xl font-extrabold text-slate-800">{{ cliente.nombre }}</h2>
                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
-                    {{ cliente.etapa }}
+                    {{ cliente.get_estado_display }}
                 </span>
             </div>
-            <p class="text-sm text-slate-500 mt-1">{{ cliente.empresa }} • Registrado el {{ cliente.fecha_registro }}</p>
-        </div>
-        <button class="px-4 py-2 bg-brand-dark hover:bg-slate-800 text-white font-medium text-xs rounded-lg transition shadow-sm">
-            + Nueva Interacción
-        </button>
-    </div>
+            <p class="text-sm text-slate-500 mt-1">
+    Cliente CRM • Registrado el {{ cliente.fecha_registro|date:"d/m/Y" }}
+</p>
+        <div class="flex items-center gap-2">
+
+    {% if user.is_staff %}
+        <a href="{% url 'editar_cliente' cliente.id %}"
+           class="px-4 py-2 bg-brand-coral hover:bg-rose-700 text-white font-medium text-xs rounded-lg transition shadow-sm">
+            Editar Cliente
+        </a>
+    {% endif %}
+
+    <button class="px-4 py-2 bg-brand-dark hover:bg-slate-800 text-white font-medium text-xs rounded-lg transition shadow-sm">
+        + Nueva Interacción
+    </button>
+
+</div>
 
     <!-- Grid de Información e Historial -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">

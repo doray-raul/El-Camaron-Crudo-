@@ -37,6 +37,7 @@ def logout_view(request):
     return redirect('login')
 
 
+@login_required(login_url='/login/')
 def dashboard_view(request):
     total_clientes = Cliente.objects.count()
 
@@ -75,17 +76,25 @@ def dashboard_view(request):
         else 0
     )
 
+    clientes_por_etapa = Cliente.objects.values(
+        'etapa_crm'
+        ).annotate(
+            total=Count('id')
+        ).order_by('-total')
+
     context = {
         'total_clientes': total_clientes,
         'clientes_activos': clientes_activos,
         'interacciones': interacciones,
         'clientes_en_riesgo': clientes_en_riesgo,
         'porcentaje_activos': porcentaje_activos,
+        'clientes_por_etapa': list(clientes_por_etapa),
     }
 
     return render(request, 'crm/dashboard.html', context)
 
 
+@login_required(login_url='/login/')
 def clientes_view(request):
     clientes = Cliente.objects.all()
 
@@ -118,48 +127,31 @@ def clientes_view(request):
     return render(request, 'crm/clientes.html', context)
 
 
+@login_required(login_url='/login/')
 def detalle_cliente_view(request, cliente_id):
-    # Simulamos los datos del cliente seleccionado
-    cliente = {
-        'id': cliente_id,
-        'nombre': 'María López',
-        'correo': 'maria@email.com',
-        'telefono': '449-123-4567',
-        'fecha_registro': '10/01/2026',
-        'etapa': 'Frecuente',
-        'estado': 'Activo'
-    }
+    cliente = get_object_or_404(
+        Cliente,
+        id=cliente_id
+    )
 
-    # Historial de interacciones
-    interacciones = [
-        {
-            'tipo': 'Llamada',
-            'fecha': '15/08/2026',
-            'descripcion': 'Se confirmó pedido de tostilocos y se habló sobre próximos productos de temporada.',
-            'usuario': 'Admin'
-        },
-        {
-            'tipo': 'Correo',
-            'fecha': '10/08/2026',
-            'descripcion': 'Se envió información y menú actualizado de litros de aguachile y ceviche.',
-            'usuario': 'Admin'
-        },
-        {
-            'tipo': 'Reunión',
-            'fecha': '02/08/2026',
-            'descripcion': 'Reunión en sucursal para revisar opciones de servicio para evento especial.',
-            'usuario': 'Admin'
-        },
-    ]
+    interacciones = Interaccion.objects.filter(
+        cliente=cliente
+    ).select_related(
+        'usuario'
+    ).order_by('-fecha')
 
     context = {
         'cliente': cliente,
-        'interacciones': interacciones
+        'interacciones': interacciones,
     }
 
-    return render(request, 'crm/detalle_cliente.html', context)
+    return render(
+        request,
+        'crm/detalle_cliente.html',
+        context
+    )
 
-
+@login_required(login_url='/login/')
 def nuevo_cliente_view(request):
     if request.method == 'POST':
         form = ClienteForm(request.POST)
@@ -177,15 +169,30 @@ def nuevo_cliente_view(request):
     )
 
 
+@login_required(login_url='/login/')
 def editar_cliente_view(request, cliente_id):
     cliente = get_object_or_404(Cliente, id=cliente_id)
+
+    if not request.user.is_staff and not request.user.is_superuser:
+        messages.error(
+            request,
+            'No tienes permisos para editar clientes.'
+        )
+        return redirect('detalle_cliente', cliente_id=cliente.id)
 
     if request.method == 'POST':
         form = ClienteForm(request.POST, instance=cliente)
 
         if form.is_valid():
             form.save()
-            return redirect('clientes')
+            messages.success(
+                request,
+                'Cliente actualizado correctamente.'
+            )
+            return redirect(
+                'detalle_cliente',
+                cliente_id=cliente.id
+            )
     else:
         form = ClienteForm(instance=cliente)
 
@@ -194,7 +201,7 @@ def editar_cliente_view(request, cliente_id):
         'crm/editar_cliente.html',
         {
             'form': form,
-            'cliente': cliente
+            'cliente': cliente,
         }
     )
     
@@ -359,11 +366,9 @@ def editar_usuario_view(request, usuario_id):
         form = UsuarioForm(request.POST, instance=usuario)
 
         if form.is_valid():
-            form.save()
-            messages.success(
-                request,
-                'Usuario actualizado correctamente.'
-            )
+            usuario = form.save()
+            usuario.refresh_from_db()
+            messages.success(request, 'Usuario actualizado correctamente.')
             return redirect('usuarios')
     else:
         form = UsuarioForm(instance=usuario)
@@ -399,12 +404,10 @@ def editar_perfil_view(request):
         form.fields.pop('es_administrador', None)
 
         if form.is_valid():
-            form.save()
-            messages.success(
-                request,
-                'Tu perfil fue actualizado correctamente.'
-            )
-            return redirect('perfil')
+                usuario = form.save()
+                usuario.refresh_from_db()
+                messages.success(request, 'Tu perfil fue actualizado correctamente.')
+        return redirect('perfil')
     else:
         form = UsuarioForm(instance=usuario)
         form.fields.pop('es_administrador', None)
