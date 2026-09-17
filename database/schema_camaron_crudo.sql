@@ -2,18 +2,18 @@
 -- Este archivo se importa únicamente en una base CamaronCrudo vacía.
 
 CREATE TABLE `core_producto` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
+  `id_producto` bigint NOT NULL AUTO_INCREMENT,
   `nombre` varchar(120) NOT NULL,
   `descripcion` longtext NOT NULL,
   `precio` decimal(10,2) NOT NULL,
   `imagen` varchar(255) NOT NULL,
   `disponible` tinyint(1) NOT NULL,
   `creado_en` datetime(6) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id_producto`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `core_pedido` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
+  `id_pedido` bigint NOT NULL AUTO_INCREMENT,
   `nombre_cliente` varchar(150) NOT NULL,
   `correo` varchar(254) NOT NULL,
   `telefono` varchar(25) NOT NULL,
@@ -24,22 +24,22 @@ CREATE TABLE `core_pedido` (
   `estado` varchar(20) NOT NULL,
   `creado_en` datetime(6) NOT NULL,
   `usuario_id` int NULL,
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`id_pedido`),
   KEY `core_pedido_usuario_id_idx` (`usuario_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `core_detallepedido` (
-  `id` bigint NOT NULL AUTO_INCREMENT,
+  `id_detallepedido` bigint NOT NULL AUTO_INCREMENT,
   `nombre_producto` varchar(120) NOT NULL,
   `precio_unitario` decimal(10,2) NOT NULL,
   `cantidad` int unsigned NOT NULL,
   `pedido_id` bigint NOT NULL,
   `producto_id` bigint NULL,
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`id_detallepedido`),
   KEY `core_detallepedido_pedido_id_idx` (`pedido_id`),
   KEY `core_detallepedido_producto_id_idx` (`producto_id`),
-  CONSTRAINT `core_detallepedido_pedido_id_fk` FOREIGN KEY (`pedido_id`) REFERENCES `core_pedido` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `core_detallepedido_producto_id_fk` FOREIGN KEY (`producto_id`) REFERENCES `core_producto` (`id`) ON DELETE SET NULL
+  CONSTRAINT `core_detallepedido_pedido_id_fk` FOREIGN KEY (`pedido_id`) REFERENCES `core_pedido` (`id_pedido`) ON DELETE CASCADE,
+  CONSTRAINT `core_detallepedido_producto_id_fk` FOREIGN KEY (`producto_id`) REFERENCES `core_producto` (`id_producto`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `core_producto` (`nombre`, `descripcion`, `precio`, `imagen`, `disponible`, `creado_en`) VALUES

@@ -1,0 +1,45 @@
+{% extends 'crm/base.html' %}
+
+{% block title %}Interacciones | El Camarón Crudo{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <a href="{% url 'clientes' %}" class="text-xs font-semibold text-slate-500 hover:text-brand-coral">← Clientes</a>
+            <h2 class="mt-2 text-2xl font-extrabold text-slate-800">
+                Historial de interacciones{% if cliente_seleccionado %} — {{ cliente_seleccionado.nombre }}{% endif %}
+            </h2>
+            <p class="text-sm text-slate-500">Registro cronológico de llamadas, correos y reuniones con clientes.</p>
+        </div>
+        <a href="{% url 'nueva_interaccion' %}{% if cliente_seleccionado %}?cliente={{ cliente_seleccionado.id }}{% endif %}"
+           class="inline-flex items-center justify-center rounded-lg bg-brand-lime px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-600 transition">
+            + Nueva interacción
+        </a>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+        <div class="relative pl-8 space-y-5 before:absolute before:left-3 before:top-3 before:bottom-3 before:w-0.5 before:bg-slate-200">
+            {% for interaccion in interacciones %}
+            <article class="relative">
+                <span class="absolute -left-8 top-4 flex h-6 w-6 items-center justify-center rounded-full border-4 border-white shadow-sm
+                    {% if interaccion.tipo == 'LLAMADA' %}bg-emerald-500{% elif interaccion.tipo == 'CORREO' %}bg-sky-500{% else %}bg-violet-500{% endif %}">
+                </span>
+                <div class="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1">
+                        <div>
+                            <h3 class="font-bold text-slate-800">{{ interaccion.get_tipo_display }} · {{ interaccion.cliente.nombre }}</h3>
+                            <p class="mt-1 text-sm text-slate-600">{{ interaccion.descripcion }}</p>
+                            <p class="mt-2 text-xs text-slate-400">Registrada por: {{ interaccion.usuario.get_full_name|default:interaccion.usuario.username }}</p>
+                        </div>
+                        <time class="shrink-0 text-xs text-slate-400">{{ interaccion.fecha|date:"d/m/Y H:i" }}</time>
+                    </div>
+                </div>
+            </article>
+            {% empty %}
+            <p class="py-12 text-center text-sm text-slate-400">Aún no hay interacciones registradas.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

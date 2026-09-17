@@ -1,5 +1,7 @@
-from django.urls import path
+from django.urls import include, path
+
 from core import views
+from crm import views as crm_views
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -12,6 +14,9 @@ urlpatterns = [
     path('politicas/', views.politicas_privacidad, name='politicas_privacidad'),
     path('carrito/', views.carrito_view, name='carrito'),
     path('pago/', views.pago_view, name='pago'),
+    path('crm/login/', crm_views.login_view, name='crm_login'),
+    path('crm/logout/', crm_views.logout_view, name='crm_logout'),
+    path('crm/', include('crm.urls')),
     # El panel es una pantalla del front; no requiere la app de administración
     # ni una base de datos.
     path('admin/', views.admin_panel_view),

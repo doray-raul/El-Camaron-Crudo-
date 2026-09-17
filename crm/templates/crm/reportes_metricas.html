@@ -1,0 +1,209 @@
+{% extends 'crm/base.html' %}
+
+{% block title %}Reportes y Métricas | El Camarón Crudo{% endblock %}
+
+{% block content %}
+
+<div class="space-y-6">
+
+    <!-- CABECERA -->
+    <div>
+        <h2 class="text-2xl font-bold text-slate-800">
+            Reportes y Métricas
+        </h2>
+
+        <p class="text-sm text-slate-500">
+            Indicadores generales del CRM de El Camarón Crudo.
+        </p>
+    </div>
+
+
+    <!-- MÉTRICAS PRINCIPALES -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+
+        <!-- TOTAL -->
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                Total de Clientes
+            </span>
+
+            <div class="text-3xl font-extrabold text-slate-800 mt-2">
+                {{ total_clientes }}
+            </div>
+
+        </div>
+
+
+        <!-- ACTIVOS -->
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                Clientes Activos
+            </span>
+
+            <div class="text-3xl font-extrabold text-brand-lime mt-2">
+                {{ clientes_activos }}
+            </div>
+
+        </div>
+
+
+        <!-- INACTIVOS -->
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                Clientes Inactivos
+            </span>
+
+            <div class="text-3xl font-extrabold text-slate-700 mt-2">
+                {{ clientes_inactivos }}
+            </div>
+
+        </div>
+
+
+        <!-- RIESGO -->
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-brand-coral">
+
+            <span class="text-xs font-semibold text-brand-coral uppercase tracking-wider">
+                Clientes en Riesgo
+            </span>
+
+            <div class="text-3xl font-extrabold text-brand-coral mt-2">
+                {{ clientes_en_riesgo }}
+            </div>
+
+            <span class="text-xs text-slate-400 mt-1 inline-block">
+                Sin interacción +30 días
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- SEGUNDO BLOQUE -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- INTERACCIONES -->
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+
+            <h3 class="text-lg font-bold text-slate-800 mb-5">
+                Actividad CRM
+            </h3>
+
+            <div class="space-y-5">
+
+                <div class="flex items-center justify-between">
+
+                    <span class="text-sm text-slate-500">
+                        Interacciones totales
+                    </span>
+
+                    <span class="text-xl font-bold text-slate-800">
+                        {{ interacciones_totales }}
+                    </span>
+
+                </div>
+
+                <div class="flex items-center justify-between">
+
+                    <span class="text-sm text-slate-500">
+                        Interacciones este mes
+                    </span>
+
+                    <span class="text-xl font-bold text-brand-lime">
+                        {{ interacciones_mes }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ETAPAS -->
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+
+            <h3 class="text-lg font-bold text-slate-800 mb-5">
+                Clientes por etapa CRM
+            </h3>
+
+            <div class="space-y-3">
+
+                {% for etapa in clientes_por_etapa %}
+
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+
+                    <span class="text-sm text-slate-600">
+                        {% if etapa.etapa_crm == 'PROSPECTO' %}
+                            Prospecto
+                        {% elif etapa.etapa_crm == 'ACTIVO' %}
+                            Activo
+                        {% elif etapa.etapa_crm == 'FRECUENTE' %}
+                            Frecuente
+                        {% else %}
+                            Inactivo
+                        {% endif %}
+                    </span>
+
+                    <span class="font-bold text-slate-800">
+                        {{ etapa.total }}
+                    </span>
+
+                </div>
+
+                {% empty %}
+
+                <p class="text-sm text-slate-400">
+                    No hay datos disponibles.
+                </p>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- RESUMEN DE ETAPAS -->
+    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+
+        <h3 class="text-lg font-bold text-slate-800 mb-5">
+            Resumen del CRM
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            <div class="flex justify-between items-center p-4 bg-slate-50 rounded-lg">
+                <span class="text-sm text-slate-600">
+                    Prospectos
+                </span>
+
+                <span class="font-bold text-slate-800">
+                    {{ prospectos }}
+                </span>
+            </div>
+
+
+            <div class="flex justify-between items-center p-4 bg-slate-50 rounded-lg">
+                <span class="text-sm text-slate-600">
+                    Clientes frecuentes
+                </span>
+
+                <span class="font-bold text-slate-800">
+                    {{ clientes_frecuentes }}
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
