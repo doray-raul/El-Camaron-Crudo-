@@ -8,16 +8,12 @@ from django.db.models import Sum
 from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
-from .models import Pedido, Producto
+from productos.models import Producto
+from ventas.models import Pedido
 
 
 def home(request):
     return render(request, 'index.html')
-
-
-def productos_view(request):
-    productos = Producto.objects.filter(disponible=True)
-    return render(request, 'productos.html', {'productos': productos})
 
 
 def ubicacion_view(request):

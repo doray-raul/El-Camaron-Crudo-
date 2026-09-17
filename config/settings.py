@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'crm',
+    'productos',
+    'ventas',
     'core',
 ]
 
