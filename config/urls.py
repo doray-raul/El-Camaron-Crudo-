@@ -1,12 +1,8 @@
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-
-    # Login, registro y páginas generales de Core
     path('', include('core.urls')),
-
-    # CRM
-    path('', include('crm.urls')),
+    path('crm/', include('crm.urls')),
 ]

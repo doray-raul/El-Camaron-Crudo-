@@ -9,27 +9,38 @@ from django.db.models import Q, Max, Count
 from django.utils import timezone
 
 from .models import Cliente, Interaccion
-from .forms import ClienteForm, UsuarioForm
+from .forms import ClienteForm, UsuarioForm, InteraccionForm
+
+
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
+from django.shortcuts import render, redirect
 
 
 def login_view(request):
-    if request.method == 'POST':
-        correo = request.POST.get('correo')
-        password = request.POST.get('password')
+    if request.user.is_authenticated:
+        return redirect('dashboard')
 
-        usuario = authenticate(
+    if request.method == 'POST':
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
+
+        user = authenticate(
             request,
-            username=correo,
+            username=username,
             password=password
         )
 
-        if usuario is not None:
-            login(request, usuario)
+        if user is not None:
+            login(request, user)
             return redirect('dashboard')
 
-        messages.error(request, 'Correo o contraseña incorrectos.')
+        messages.error(
+            request,
+            'Usuario o contraseña incorrectos.'
+        )
 
-    return render(request, 'crm/login.html')
+    return render(request, 'core/login.html')
 
 
 def logout_view(request):
@@ -129,10 +140,28 @@ def clientes_view(request):
 
 @login_required(login_url='/login/')
 def detalle_cliente_view(request, cliente_id):
-    cliente = get_object_or_404(
-        Cliente,
-        id=cliente_id
-    )
+    cliente = get_object_or_404(Cliente, id=cliente_id)
+
+    if request.method == 'POST':
+        form = InteraccionForm(request.POST)
+
+        if form.is_valid():
+            interaccion = form.save(commit=False)
+            interaccion.cliente = cliente
+            interaccion.usuario = request.user
+            interaccion.save()
+
+            messages.success(
+                request,
+                'Interacción registrada correctamente.'
+            )
+
+            return redirect(
+                'detalle_cliente',
+                cliente_id=cliente.id
+            )
+    else:
+        form = InteraccionForm()
 
     interacciones = Interaccion.objects.filter(
         cliente=cliente
@@ -143,6 +172,7 @@ def detalle_cliente_view(request, cliente_id):
     context = {
         'cliente': cliente,
         'interacciones': interacciones,
+        'interaccion_form': form,
     }
 
     return render(
@@ -150,7 +180,8 @@ def detalle_cliente_view(request, cliente_id):
         'crm/detalle_cliente.html',
         context
     )
-
+    
+    
 @login_required(login_url='/login/')
 def nuevo_cliente_view(request):
     if request.method == 'POST':

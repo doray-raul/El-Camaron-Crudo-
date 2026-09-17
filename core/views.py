@@ -39,7 +39,9 @@ def admin_panel_view(request):
 
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect('core_login')
+        if request.user.is_staff:
+            return redirect('dashboard')
+        return redirect('home')
 
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -53,7 +55,10 @@ def login_view(request):
             if next_url:
                 return redirect(next_url)
 
-            return redirect('core_login')
+            if usuario.is_staff:
+                return redirect('dashboard')
+
+            return redirect('home')
 
     else:
         form = AuthenticationForm()
@@ -67,12 +72,21 @@ def logout_view(request):
 
 def registro(request):
     if request.user.is_authenticated:
-        return redirect('core_login')
+        if request.user.is_staff:
+            return redirect('dashboard')
+        return redirect('home')
+
     form = UserCreationForm(request.POST or None)
+
     if request.method == 'POST' and form.is_valid():
         user = form.save()
         login(request, user)
-        return redirect('core_login')
+
+        if user.is_staff:
+            return redirect('dashboard')
+
+        return redirect('home')
+
     return render(request, 'registro.html', {'form': form})
 
 def politicas_privacidad(request):

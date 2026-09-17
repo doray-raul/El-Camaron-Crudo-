@@ -39,10 +39,14 @@
                         </a>
                     </li>
                     {% if user.is_authenticated %}
-                        {% if user.is_staff %}<li class="nav-item"><a class="nav-link" href="{% url 'admin_panel' %}">Admin</a></li>{% endif %}
-                        <li class="nav-item"><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="nav-link btn btn-link text-white" type="submit">Cerrar sesión</button></form></li>
+                        {% if user.is_staff %}
+    <a href="{% url 'dashboard' %}">
+        Admin
+    </a>
+{% endif %}
+                        <li class="nav-item"><form method="post" action="{% url 'core_logout' %}">{% csrf_token %}<button class="nav-link btn btn-link text-white" type="submit">Cerrar sesión</button></form></li>
                     {% else %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Iniciar sesión</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'core_login' %}">Iniciar sesión</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'registro' %}">Registrarse</a></li>
                     {% endif %}
                 </ul>
@@ -156,7 +160,7 @@
                     <p>
                         Tus datos personales son tratados con confidencialidad. 
                         No compartimos tu información con terceros sin tu consentimiento. 
-                        <a href="{% url 'politicas_privacidad' %}" class="text-warning">Leer más</a>
+                        {% url 'politicas' %}
                     </p>
                 </div>
             </div>

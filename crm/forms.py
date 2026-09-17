@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Cliente
+from .models import Cliente, Interaccion
 
 
 class ClienteForm(forms.ModelForm):
@@ -101,23 +101,42 @@ class UsuarioForm(forms.ModelForm):
         return cleaned_data
 
     def save(self, commit=True):
-            usuario = super().save(commit=False)
+        usuario = super().save(commit=False)
 
-            usuario.username = usuario.email
+        usuario.username = usuario.email
 
-            password = self.cleaned_data.get('password')
-            if password:
-                usuario.set_password(password)
+        password = self.cleaned_data.get('password')
 
-            # Solo modificar el rol si el campo existe en el formulario.
-            # En "Mi Perfil" ese campo se elimina para no alterar permisos.
-            if 'es_administrador' in self.fields:
-                usuario.is_staff = self.cleaned_data.get(
-                    'es_administrador',
-                    usuario.is_staff
-                )
+        if password:
+            usuario.set_password(password)
 
-            if commit:
-                usuario.save()
+        if 'es_administrador' in self.fields:
+            usuario.is_staff = self.cleaned_data.get(
+                'es_administrador',
+                usuario.is_staff
+            )
 
-            return usuario
+        if commit:
+            usuario.save()
+
+        return usuario
+
+
+class InteraccionForm(forms.ModelForm):
+    class Meta:
+        model = Interaccion
+        fields = [
+            'tipo',
+            'descripcion',
+        ]
+
+        widgets = {
+            'tipo': forms.Select(attrs={
+                'class': 'w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-coral/20 focus:border-brand-coral',
+            }),
+            'descripcion': forms.Textarea(attrs={
+                'class': 'w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-coral/20 focus:border-brand-coral',
+                'rows': 4,
+                'placeholder': 'Describe el seguimiento realizado con el cliente...',
+            }),
+        }
