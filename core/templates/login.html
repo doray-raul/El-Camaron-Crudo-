@@ -13,11 +13,19 @@
         <div class="card shadow-sm border-0">
             <div class="card-body p-4">
                 <h1 class="h2 text-center mb-4">Iniciar sesión</h1>
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
                 <form method="post">
                     {% csrf_token %}
+                    {% if request.GET.next %}
+                        <input type="hidden" name="next" value="{{ request.GET.next }}">
+                    {% endif %}
                     {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
                     <div class="mb-3">
-                        <label for="id_username" class="form-label">Usuario</label>
+                        <label for="id_username" class="form-label">Usuario, correo o nombre</label>
                         <input id="id_username" name="username" type="text" class="form-control" value="{{ form.username.value|default:'' }}" required autofocus>
                         {% if form.username.errors %}<div class="text-danger small">{{ form.username.errors }}</div>{% endif %}
                     </div>

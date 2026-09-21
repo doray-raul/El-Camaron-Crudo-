@@ -25,6 +25,23 @@ pymysql.install_as_MySQLdb()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+def cargar_variables_locales():
+    """Carga la configuración local sin requerir una dependencia adicional."""
+    archivo_env = BASE_DIR / '.env'
+    if not archivo_env.exists():
+        return
+
+    for linea in archivo_env.read_text(encoding='utf-8').splitlines():
+        linea = linea.strip()
+        if not linea or linea.startswith('#') or '=' not in linea:
+            continue
+        clave, valor = linea.split('=', 1)
+        os.environ.setdefault(clave.strip(), valor.strip().strip('"').strip("'"))
+
+
+cargar_variables_locales()
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
@@ -124,6 +141,9 @@ USE_TZ = True
 # La barra inicial hace que los recursos se busquen siempre desde la raíz del
 # sitio, también cuando se navega a /productos/, /login/, etc.
 STATIC_URL = '/static/'
+
+# Mantiene los identificadores nuevos alineados con las migraciones existentes.
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # Email

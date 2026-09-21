@@ -14,7 +14,7 @@
 
     {% if messages %}
         {% for message in messages %}
-            <p>{{ message }}</p>
+            <p role="alert">{{ message }}</p>
         {% endfor %}
     {% endif %}
 
@@ -22,7 +22,7 @@
         {% csrf_token %}
 
         <div>
-            <label for="correo">Correo:</label>
+            <label for="correo">Usuario, correo o nombre:</label>
             <input
                 type="email"
                 id="correo"

@@ -3,6 +3,16 @@ from django.contrib.auth.models import User
 
 
 class Cliente(models.Model):
+    # Un cliente representa una cuenta registrada. Mantener la relación en el
+    # perfil CRM evita que el directorio y el selector de interacciones usen
+    # listas distintas.
+    usuario = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='perfil_cliente',
+        null=True,
+        blank=True,
+    )
     ETAPAS = [
         ('PROSPECTO', 'Prospecto'),
         ('ACTIVO', 'Activo'),
@@ -32,6 +42,19 @@ class Cliente(models.Model):
 
     def __str__(self):
         return self.nombre
+
+
+def sincronizar_clientes_registrados():
+    """Garantiza un perfil CRM para cada cuenta de cliente ya existente."""
+    for usuario in User.objects.filter(is_staff=False):
+        Cliente.objects.get_or_create(
+            usuario=usuario,
+            defaults={
+                'nombre': usuario.get_full_name() or usuario.username,
+                'correo': usuario.email,
+                'estado': 'ACTIVO' if usuario.is_active else 'INACTIVO',
+            },
+        )
 
 
 class Interaccion(models.Model):

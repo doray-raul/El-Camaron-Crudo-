@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Cliente, Interaccion
+from .models import Cliente, Interaccion, sincronizar_clientes_registrados
 
 
 class ClienteForm(forms.ModelForm):
@@ -37,6 +37,16 @@ class ClienteForm(forms.ModelForm):
 
 
 class InteraccionForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Las interacciones se registran para las mismas cuentas que se ven
+        # en el directorio de clientes, no para un catálogo separado.
+        sincronizar_clientes_registrados()
+        self.fields['cliente'].queryset = Cliente.objects.filter(
+            usuario__isnull=False,
+            usuario__is_staff=False,
+        ).order_by('nombre')
+
     class Meta:
         model = Interaccion
         fields = ['cliente', 'tipo', 'descripcion']
@@ -56,6 +66,15 @@ class InteraccionForm(forms.ModelForm):
 
 
 class UsuarioForm(forms.ModelForm):
+    def __init__(self, *args, permitir_administrador=False,
+                 requerir_contrasena=False, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not permitir_administrador:
+            self.fields.pop('es_administrador', None)
+        if requerir_contrasena:
+            self.fields['password'].required = True
+            self.fields['password_confirmacion'].required = True
+
     password = forms.CharField(
         label='Contraseña',
         widget=forms.PasswordInput(attrs={
@@ -138,5 +157,14 @@ class UsuarioForm(forms.ModelForm):
 
             if commit:
                 usuario.save()
+                if not usuario.is_staff:
+                    Cliente.objects.update_or_create(
+                        usuario=usuario,
+                        defaults={
+                            'nombre': usuario.get_full_name() or usuario.username,
+                            'correo': usuario.email,
+                            'estado': 'ACTIVO' if usuario.is_active else 'INACTIVO',
+                        },
+                    )
 
             return usuario

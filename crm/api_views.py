@@ -5,7 +5,7 @@ from rest_framework import generics, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .permissions import EsAdminOEmpleadoSinEliminar
-from .models import Cliente, Interaccion
+from .models import Cliente, Interaccion, sincronizar_clientes_registrados
 from .serializers import ClienteSerializer, InteraccionSerializer
 
 
@@ -14,7 +14,8 @@ class ClienteViewSet(viewsets.ModelViewSet):
     permission_classes = [EsAdminOEmpleadoSinEliminar]
     
     def get_queryset(self):
-        queryset = Cliente.objects.all()
+        sincronizar_clientes_registrados()
+        queryset = Cliente.objects.filter(usuario__isnull=False)
 
         estado = self.request.query_params.get('estado')
         etapa_crm = self.request.query_params.get('etapa_crm')
@@ -65,6 +66,8 @@ class ClienteViewSet(viewsets.ModelViewSet):
     def interacciones(self, request, pk=None):
         cliente = self.get_object()
         queryset = cliente.interacciones.all()
+        if not request.user.is_superuser:
+            queryset = queryset.filter(usuario=request.user)
         serializer = InteraccionSerializer(queryset, many=True)
 
         return Response(serializer.data)

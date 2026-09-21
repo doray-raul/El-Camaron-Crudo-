@@ -8,40 +8,53 @@ from django.contrib import messages
 from django.db.models import Q, Max, Count
 from django.utils import timezone
 
-from .models import Cliente, Interaccion
+from .models import Cliente, Interaccion, sincronizar_clientes_registrados
 from .forms import ClienteForm, InteraccionForm, UsuarioForm
 
 
 def login_view(request):
-    if request.method == 'POST':
-        correo = request.POST.get('correo')
-        password = request.POST.get('password')
+    if request.user.is_authenticated:
+        return redirect('dashboard')
 
-        usuario = authenticate(
-            request,
-            username=correo,
-            password=password
+    if request.method == 'POST':
+        identificador = request.POST.get('correo', '').strip()
+        password = request.POST.get('password')
+        candidatos = User.objects.filter(
+            Q(username__iexact=identificador)
+            | Q(email__iexact=identificador)
+            | Q(first_name__iexact=identificador)
         )
+        usuario = None
+        if candidatos.count() == 1:
+            usuario = authenticate(
+                request,
+                username=candidatos.first().username,
+                password=password,
+            )
 
         if usuario is not None:
             login(request, usuario)
             return redirect('dashboard')
 
-        messages.error(request, 'Correo o contraseña incorrectos.')
+        messages.error(request, 'Usuario, correo o contraseña incorrectos.')
 
     return render(request, 'crm/login.html')
 
 
 def logout_view(request):
-    logout(request)
-    return redirect('crm_login')
+    if request.method == 'POST':
+        logout(request)
+        messages.success(request, 'Sesión cerrada correctamente.')
+    return redirect('home')
 
 
 @login_required(login_url='/crm/login/')
 def dashboard_view(request):
-    total_clientes = Cliente.objects.count()
+    sincronizar_clientes_registrados()
+    clientes = Cliente.objects.filter(usuario__isnull=False)
+    total_clientes = clientes.count()
 
-    clientes_activos = Cliente.objects.filter(
+    clientes_activos = clientes.filter(
         estado='ACTIVO'
     ).count()
 
@@ -61,7 +74,7 @@ def dashboard_view(request):
 
     fecha_limite = ahora - timedelta(days=30)
 
-    clientes_con_ultima_interaccion = Cliente.objects.annotate(
+    clientes_con_ultima_interaccion = clientes.annotate(
         ultima_interaccion=Max('interacciones__fecha')
     )
 
@@ -76,7 +89,7 @@ def dashboard_view(request):
         else 0
     )
 
-    clientes_por_etapa = Cliente.objects.values(
+    clientes_por_etapa = clientes.values(
         'etapa_crm'
         ).annotate(
             total=Count('id')
@@ -96,7 +109,8 @@ def dashboard_view(request):
 
 @login_required(login_url='/crm/login/')
 def clientes_view(request):
-    clientes = Cliente.objects.all()
+    sincronizar_clientes_registrados()
+    clientes = Cliente.objects.filter(usuario__isnull=False)
 
     busqueda = request.GET.get('busqueda', '').strip()
 
@@ -140,6 +154,9 @@ def detalle_cliente_view(request, cliente_id):
         'usuario'
     ).order_by('-fecha')
 
+    if not request.user.is_superuser:
+        interacciones = interacciones.filter(usuario=request.user)
+
     context = {
         'cliente': cliente,
         'interacciones': interacciones,
@@ -158,6 +175,9 @@ def interacciones_view(request, cliente_id=None):
         'cliente',
         'usuario',
     ).order_by('-fecha')
+
+    if not request.user.is_superuser:
+        interacciones = interacciones.filter(usuario=request.user)
 
     # La pantalla general puede recibir el cliente por query string, mientras
     # que la ruta /interacciones/cliente/<id>/ lo entrega como argumento.
@@ -196,20 +216,12 @@ def nueva_interaccion_view(request):
 
 @login_required(login_url='/crm/login/')
 def nuevo_cliente_view(request):
-    if request.method == 'POST':
-        form = ClienteForm(request.POST)
-
-        if form.is_valid():
-            form.save()
-            return redirect('clientes')
-    else:
-        form = ClienteForm()
-
-    return render(
-        request,
-        'crm/nuevo_cliente.html',
-        {'form': form}
-    )
+    # Los clientes se crean a partir de cuentas de usuario; así se evita que
+    # aparezcan registros distintos en el directorio y en interacciones.
+    if request.user.is_staff:
+        return redirect('nuevo_usuario')
+    messages.error(request, 'Solo un administrador puede registrar clientes.')
+    return redirect('dashboard')
 
 
 @login_required(login_url='/crm/login/')
@@ -227,7 +239,13 @@ def editar_cliente_view(request, cliente_id):
         form = ClienteForm(request.POST, instance=cliente)
 
         if form.is_valid():
-            form.save()
+            cliente = form.save()
+            if cliente.usuario:
+                nombre, *apellidos = cliente.nombre.strip().split(maxsplit=1)
+                cliente.usuario.first_name = nombre
+                cliente.usuario.last_name = apellidos[0] if apellidos else ''
+                cliente.usuario.email = cliente.correo
+                cliente.usuario.save(update_fields=['first_name', 'last_name', 'email'])
             messages.success(
                 request,
                 'Cliente actualizado correctamente.'
@@ -377,7 +395,8 @@ def nuevo_usuario_view(request):
         return redirect('dashboard')
 
     if request.method == 'POST':
-        form = UsuarioForm(request.POST)
+        form = UsuarioForm(request.POST, permitir_administrador=request.user.is_superuser,
+                           requerir_contrasena=True)
 
         if form.is_valid():
             form.save()
@@ -388,12 +407,13 @@ def nuevo_usuario_view(request):
             )
         return redirect('usuarios')
     else:
-        form = UsuarioForm()
+        form = UsuarioForm(permitir_administrador=request.user.is_superuser,
+                           requerir_contrasena=True)
 
     return render(
         request,
         'crm/nuevo_usuario.html',
-        {'form': form}
+        {'form': form, 'puede_crear_administradores': request.user.is_superuser}
     )
 
 
@@ -419,7 +439,8 @@ def editar_usuario_view(request, usuario_id):
         return redirect('usuarios')
 
     if request.method == 'POST':
-        form = UsuarioForm(request.POST, instance=usuario)
+        form = UsuarioForm(request.POST, instance=usuario,
+                           permitir_administrador=request.user.is_superuser)
 
         if form.is_valid():
             usuario = form.save()
@@ -427,7 +448,8 @@ def editar_usuario_view(request, usuario_id):
             messages.success(request, 'Usuario actualizado correctamente.')
             return redirect('usuarios')
     else:
-        form = UsuarioForm(instance=usuario)
+        form = UsuarioForm(instance=usuario,
+                           permitir_administrador=request.user.is_superuser)
 
     return render(
         request,
