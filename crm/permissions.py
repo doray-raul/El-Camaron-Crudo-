@@ -1,33 +1,21 @@
 from rest_framework.permissions import BasePermission
+from .access import is_admin, is_internal_user
 
 
 class EsAdminOEmpleado(BasePermission):
     def has_permission(self, request, view):
-        return (
-            request.user.is_authenticated
-            and request.user.groups.filter(
-                name__in=['admin', 'empleado']
-            ).exists()
-        )
+        return is_internal_user(request.user)
 
 
 class EsAdmin(BasePermission):
     def has_permission(self, request, view):
-        return (
-            request.user.is_authenticated
-            and request.user.groups.filter(name='admin').exists()
-        )
+        return is_admin(request.user)
 
 
 class EsAdminOEmpleadoSinEliminar(BasePermission):
     def has_permission(self, request, view):
-        if not request.user.is_authenticated:
+        if not is_internal_user(request.user):
             return False
-
-        if request.user.groups.filter(name='admin').exists():
+        if is_admin(request.user):
             return True
-
-        if request.user.groups.filter(name='empleado').exists():
-            return request.method != 'DELETE'
-
-        return False
+        return request.method != 'DELETE'

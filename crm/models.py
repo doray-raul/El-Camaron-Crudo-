@@ -16,6 +16,10 @@ class Cliente(models.Model):
     ]
 
     nombre = models.CharField(max_length=100)
+    usuario = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name='perfil_cliente',
+        null=True, blank=True,
+    )
     correo = models.EmailField(blank=True)
     telefono = models.CharField(max_length=20, blank=True)
     etapa_crm = models.CharField(

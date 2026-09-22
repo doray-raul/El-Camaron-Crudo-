@@ -36,93 +36,20 @@
 
             <div class="flex items-center gap-2">
 
-                {% if user.is_staff %}
+                {% if crm_is_admin %}
                     <a href="{% url 'editar_cliente' cliente.id %}"
                        class="px-4 py-2 bg-brand-coral hover:bg-rose-700 text-white font-medium text-xs rounded-lg transition shadow-sm">
                         Editar Cliente
                     </a>
                 {% endif %}
 
-                <button
-                    type="button"
-                    onclick="document.getElementById('form-interaccion').classList.toggle('hidden')"
-                    class="px-4 py-2 bg-brand-dark hover:bg-slate-800 text-white font-medium text-xs rounded-lg transition shadow-sm">
+                <a href="{% url 'nueva_interaccion' %}?cliente={{ cliente.id }}" class="px-4 py-2 bg-brand-dark hover:bg-slate-800 text-white font-medium text-xs rounded-lg transition shadow-sm">
                     + Nueva Interacción
-                </button>
+                </a>
 
             </div>
 
         </div>
-    </div>
-
-
-    <!-- FORMULARIO NUEVA INTERACCIÓN -->
-    <div id="form-interaccion"
-         class="hidden bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-
-        <div class="mb-5">
-            <h3 class="text-lg font-bold text-slate-800">
-                Registrar nueva interacción
-            </h3>
-
-            <p class="text-sm text-slate-500 mt-1">
-                Registra el seguimiento realizado con este cliente.
-            </p>
-        </div>
-
-        <form method="POST" class="space-y-4">
-
-            {% csrf_token %}
-
-            <div>
-                <label class="block text-xs font-semibold text-slate-500 mb-1">
-                    Tipo de interacción
-                </label>
-
-                {{ interaccion_form.tipo }}
-
-                {% if interaccion_form.tipo.errors %}
-                    <p class="text-xs text-red-500 mt-1">
-                        {{ interaccion_form.tipo.errors }}
-                    </p>
-                {% endif %}
-            </div>
-
-
-            <div>
-                <label class="block text-xs font-semibold text-slate-500 mb-1">
-                    Descripción
-                </label>
-
-                {{ interaccion_form.descripcion }}
-
-                {% if interaccion_form.descripcion.errors %}
-                    <p class="text-xs text-red-500 mt-1">
-                        {{ interaccion_form.descripcion.errors }}
-                    </p>
-                {% endif %}
-            </div>
-
-
-            <div class="flex justify-end gap-3 pt-2">
-
-                <button
-                    type="button"
-                    onclick="document.getElementById('form-interaccion').classList.add('hidden')"
-                    class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium text-sm rounded-lg transition">
-                    Cancelar
-                </button>
-
-                <button
-                    type="submit"
-                    class="px-4 py-2 bg-brand-coral hover:bg-rose-700 text-white font-medium text-sm rounded-lg transition shadow-sm">
-                    Guardar interacción
-                </button>
-
-            </div>
-
-        </form>
-
     </div>
 
 

@@ -68,7 +68,7 @@
                 - Reportes y Métricas
             </a>
 
-            {% if user.is_staff %}
+            {% if crm_is_admin %}
             <a href="{% url 'usuarios' %}"
                class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800/60 text-slate-300 transition">
                 - Usuarios / Empleados
@@ -132,11 +132,7 @@
                     </span>
 
                     <span class="block text-[10px] text-slate-400">
-                        {% if user.is_staff %}
-                            Administrador
-                        {% else %}
-                            Usuario
-                        {% endif %}
+                        {% if user.is_superuser %}Superusuario{% elif crm_is_admin %}Administrador{% else %}Empleado{% endif %}
                     </span>
 
                 </div>

@@ -2,14 +2,18 @@
 
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import user_passes_test
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.shortcuts import redirect, render
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from productos.models import Producto
 from ventas.models import Pedido
+from crm.access import is_admin, is_internal_user
+from crm.models import Cliente
+from .forms import RegistroPublicoForm
 
 
 def home(request):
@@ -20,7 +24,7 @@ def ubicacion_view(request):
     return render(request, 'ubicacion.html')
 
 
-@user_passes_test(lambda user: user.is_staff, login_url='core_login')
+@user_passes_test(is_admin, login_url='core_login')
 def admin_panel_view(request):
     pedidos = Pedido.objects.prefetch_related('detalles').all()
     context = {
@@ -35,7 +39,7 @@ def admin_panel_view(request):
 
 def login_view(request):
     if request.user.is_authenticated:
-        if request.user.is_staff:
+        if is_internal_user(request.user):
             return redirect('dashboard')
         return redirect('home')
 
@@ -48,10 +52,10 @@ def login_view(request):
 
             next_url = request.POST.get('next') or request.GET.get('next')
 
-            if next_url:
+            if is_internal_user(usuario) and next_url and url_has_allowed_host_and_scheme(next_url, {request.get_host()}):
                 return redirect(next_url)
 
-            if usuario.is_staff:
+            if is_internal_user(usuario):
                 return redirect('dashboard')
 
             return redirect('home')
@@ -68,19 +72,24 @@ def logout_view(request):
 
 def registro(request):
     if request.user.is_authenticated:
-        if request.user.is_staff:
+        if is_internal_user(request.user):
             return redirect('dashboard')
         return redirect('home')
 
-    form = UserCreationForm(request.POST or None)
+    form = RegistroPublicoForm(request.POST or None)
 
     if request.method == 'POST' and form.is_valid():
         user = form.save()
+        # A public account is a customer profile, never an internal CRM role.
+        Cliente.objects.get_or_create(
+            usuario=user,
+            defaults={
+                'nombre': user.get_full_name() or user.username,
+                'correo': user.email,
+                'telefono': form.cleaned_data.get('telefono', ''),
+            },
+        )
         login(request, user)
-
-        if user.is_staff:
-            return redirect('dashboard')
-
         return redirect('home')
 
     return render(request, 'registro.html', {'form': form})

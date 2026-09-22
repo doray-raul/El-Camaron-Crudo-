@@ -135,19 +135,7 @@
 
                         <td class="py-4 px-6">
 
-                            {% if usuario.is_staff %}
-
-                                <span class="text-brand-coral font-medium">
-                                    Administrador
-                                </span>
-
-                            {% else %}
-
-                                <span class="text-slate-500 font-medium">
-                                    Empleado
-                                </span>
-
-                            {% endif %}
+                            <span class="text-slate-500 font-medium">{{ usuario.crm_role }}</span>
 
                         </td>
 

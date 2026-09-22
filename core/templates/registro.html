@@ -87,7 +87,7 @@
 
                     {% if user.is_authenticated %}
 
-                        {% if user.is_staff %}
+                        {% if crm_is_admin %}
                             <li class="nav-item">
                                 <a
                                     class="nav-link"
@@ -208,6 +208,17 @@
 
                     </div>
 
+
+                    <div class="mb-3">
+                        <label for="id_email" class="form-label">Correo electrónico</label>
+                        <input id="id_email" name="email" type="email" class="form-control" value="{{ form.email.value|default:'' }}" required>
+                        {% if form.email.errors %}<div class="text-danger small">{{ form.email.errors }}</div>{% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_telefono" class="form-label">Teléfono</label>
+                        <input id="id_telefono" name="telefono" type="text" class="form-control" value="{{ form.telefono.value|default:'' }}">
+                    </div>
 
                     <!-- Contraseña -->
 

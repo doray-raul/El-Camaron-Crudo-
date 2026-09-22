@@ -15,12 +15,12 @@
         <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
             <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total de Clientes</span>
             <div class="text-3xl font-extrabold text-slate-800 mt-2">{{ total_clientes }}</div>
-            <span class="text-xs text-brand-lime font-medium mt-1 inline-block">+12% este mes</span>
+            <span class="text-xs text-slate-500 font-medium mt-1 inline-block">Datos actuales</span>
         </div>
         <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
             <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Clientes Activos</span>
             <div class="text-3xl font-extrabold text-slate-800 mt-2">{{ clientes_activos }}</div>
-            <span class="text-xs text-slate-500 font-medium mt-1 inline-block">75% del total</span>
+            <span class="text-xs text-slate-500 font-medium mt-1 inline-block">{{ porcentaje_activos }}% del total</span>
         </div>
         <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
             <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Interacciones</span>
@@ -51,8 +51,9 @@
 
 </div>
 
+{{ clientes_por_etapa|json_script:"clientes-por-etapa" }}
 <script>
-    const clientesPorEtapa = {{ clientes_por_etapa|safe }};
+    const clientesPorEtapa = JSON.parse(document.getElementById('clientes-por-etapa').textContent);
 
     const etiquetas = clientesPorEtapa.map(item => {
         const nombres = {

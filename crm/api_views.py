@@ -4,14 +4,19 @@ from django.utils import timezone
 from rest_framework import generics, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .permissions import EsAdminOEmpleadoSinEliminar
+from .permissions import EsAdmin, EsAdminOEmpleado
 from .models import Cliente, Interaccion
 from .serializers import ClienteSerializer, InteraccionSerializer
 
 
 class ClienteViewSet(viewsets.ModelViewSet):
     serializer_class = ClienteSerializer
-    permission_classes = [EsAdminOEmpleadoSinEliminar]
+
+    def get_permissions(self):
+        # Employees may consult CRM customers; customer mutations are an
+        # administrative operation in both API and HTML interfaces.
+        permission = EsAdminOEmpleado if self.action in ('list', 'retrieve', 'interacciones') else EsAdmin
+        return [permission()]
     
     def get_queryset(self):
         queryset = Cliente.objects.all()
@@ -73,11 +78,13 @@ class ClienteViewSet(viewsets.ModelViewSet):
 class InteraccionCreateView(generics.CreateAPIView):
     queryset = Interaccion.objects.all()
     serializer_class = InteraccionSerializer
+    permission_classes = [EsAdminOEmpleado]
 
     def perform_create(self, serializer):
         serializer.save(usuario=self.request.user)
     
 class MetricasCRMView(generics.GenericAPIView):
+    permission_classes = [EsAdminOEmpleado]
 
     def get(self, request):
         fecha_limite = timezone.now() - timedelta(days=30)
@@ -122,6 +129,7 @@ class MetricasCRMView(generics.GenericAPIView):
         
 class MisInteraccionesView(generics.ListAPIView):
     serializer_class = InteraccionSerializer
+    permission_classes = [EsAdminOEmpleado]
 
     def get_queryset(self):
         return Interaccion.objects.filter(
